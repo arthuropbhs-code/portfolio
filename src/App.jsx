@@ -12,15 +12,13 @@ import ScrollToTop from './components/ScrollToTop';
 export default function App() {
   const location = useLocation();
 
-  // Detect system color scheme preference only
+  // Pure Automatic Theme Detection
   const [isDarkMode, setIsDarkMode] = useState(
     window.matchMedia('(prefers-color-scheme: dark)').matches
   );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    // Update state whenever the system/device setting changes
     const handleChange = (e) => setIsDarkMode(e.matches);
 
     mediaQuery.addEventListener('change', handleChange);
@@ -50,10 +48,12 @@ export default function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home isDarkMode={isDarkMode} />} />
-          <Route path="/:categoryId" element={<Gallery isDarkMode={isDarkMode} />} />
-          <Route path="/:categoryId/:subCategoryId" element={<Gallery isDarkMode={isDarkMode} />} />
           <Route path="/about" element={<About isDarkMode={isDarkMode} />} />
           <Route path="/contact" element={<Contact isDarkMode={isDarkMode} />} />
+          
+          {/* UPDATED: Explicit Gallery Routes to avoid routing loops */}
+          <Route path="/gallery/:categoryId" element={<Gallery isDarkMode={isDarkMode} />} />
+          <Route path="/gallery/:categoryId/:subCategoryId" element={<Gallery isDarkMode={isDarkMode} />} />
         </Routes>
       </AnimatePresence>
 

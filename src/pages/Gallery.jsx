@@ -1,57 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, Share2, Check } from 'lucide-react';
-import { PHOTO_DATA } from '../utils/photoData';
+import { X, Download, Share2, Check, Loader2, AlertCircle } from 'lucide-react';
+import { fetchCloudinaryGallery } from '../utils/photoData';
+import SmartImage from '../components/SmartImage';
 
-// Dynamic Light Mode themes based on category
-const categoryThemes = {
-  'jrotc': 'bg-[#F4F4F2]',      
-  'sports': 'bg-[#F0F2F0]',     
-  'landscape': 'bg-[#F9F6F2]',  
-  'social-events': 'bg-[#F7F7F7]' 
-};
-
-export default function Gallery() {
+export default function Gallery({ isDarkMode }) {
   const { categoryId, subCategoryId } = useParams();
+  const navigate = useNavigate();
+  const [eventGroups, setEventGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [isSystemDark, setIsSystemDark] = useState(false);
 
-  // Detect system color scheme preference
+  // Helper to format names (e.g., "south-broward" -> "South Broward")
+  const formatName = (str) => {
+    if (!str) return "";
+    return str
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsSystemDark(mediaQuery.matches);
-    const handler = (e) => setIsSystemDark(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
+    const loadGallery = async () => {
+      setLoading(true);
+      setError(null);
+      
+      const folderName = categoryId || "jrotc"; 
+      const data = await fetchCloudinaryGallery(folderName);
 
-  const categorySearch = categoryId?.toLowerCase() || "";
-  const subCategorySearch = subCategoryId?.toLowerCase() || "";
+      if (subCategoryId) {
+        // Find specific event. We normalize both for a bulletproof match.
+        const filtered = data.filter(group => 
+          group.name.toLowerCase().replace(/[\s_]/g, '-') === subCategoryId.toLowerCase()
+        );
 
-  // Dynamic Theme Selection
-  const themeClass = isSystemDark 
-    ? 'bg-[#0A0E0C]' 
-    : (categoryThemes[categorySearch] || 'bg-white');
-  
-  const textClass = isSystemDark ? 'text-white' : 'text-[#2F4538]';
-  const borderClass = isSystemDark ? 'border-white/10' : 'border-black/5';
+        if (filtered.length === 0 && data.length > 0) {
+          setError(`"${formatName(subCategoryId)}" not found.`);
+          setTimeout(() => navigate(`/gallery/${categoryId}`), 3000);
+        } else {
+          setEventGroups(filtered);
+        }
+      } else {
+        setEventGroups(data);
+      }
+      setLoading(false);
+    };
+    loadGallery();
+  }, [categoryId, subCategoryId, navigate]);
 
-  const filteredPhotos = PHOTO_DATA.filter(photo => {
-    const photoPath = photo.url.toLowerCase();
-    if (subCategorySearch) return photoPath.includes(subCategorySearch);
-    return photo.category.toLowerCase() === categorySearch.replace(/-/g, ' ');
-  });
+  // Theme Constants
+  const themeClass = isDarkMode ? 'bg-[#0A0E0C]' : 'bg-[#FCFAF8]';
+  const textClass = isDarkMode ? 'text-white' : 'text-[#2F4538]';
+  const borderClass = isDarkMode ? 'border-white/5' : 'border-black/5';
 
-  const displayTitle = subCategorySearch 
-    ? subCategorySearch.replace(/-/g, ' ') 
-    : categorySearch.replace(/-/g, ' ');
+  // --- TITLE LOGIC ---
+  // If subCategoryId exists, it takes priority over categoryId.
+  const mainTitle = subCategoryId ? formatName(subCategoryId) : formatName(categoryId);
+  const topLabel = subCategoryId ? formatName(categoryId) : "Collection";
 
   const handleCopyLink = (e, url) => {
     e.stopPropagation();
-    const fullUrl = window.location.origin + url;
-    navigator.clipboard.writeText(fullUrl);
+    navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -65,56 +78,89 @@ export default function Gallery() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <motion.span 
+            key={`label-${topLabel}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-[10px] text-[#C5A572] tracking-[0.4em] uppercase block mb-3 font-sans font-medium"
           >
-            {subCategorySearch ? categorySearch.replace(/-/g, ' ') : 'Collection'}
+            {topLabel}
           </motion.span>
           
           <motion.h2 
+            key={`title-${mainTitle}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className={`text-5xl md:text-6xl font-serif capitalize mb-8 italic transition-colors duration-1000 ${textClass}`}
+            className={`text-5xl md:text-7xl font-serif capitalize mb-8 italic transition-colors duration-1000 ${textClass}`}
           >
-            {displayTitle}
+            {mainTitle}
           </motion.h2>
 
-          <Link to="/" className="text-[9px] tracking-[0.3em] text-gray-400 hover:text-[#C5A572] transition-colors font-sans group">
+          <Link 
+            to={subCategoryId ? `/gallery/${categoryId}` : "/"} 
+            className="text-[9px] tracking-[0.3em] text-gray-400 hover:text-[#C5A572] transition-colors font-sans group uppercase"
+          >
             <span className="inline-block transition-transform group-hover:-translate-x-1 mr-2">←</span> 
-            BACK TO COLLECTIONS
+            {subCategoryId ? `Back to ${formatName(categoryId)}` : "Back to Collections"}
           </Link>
         </div>
 
-        {/* Photo Grid */}
-        {filteredPhotos.length > 0 ? (
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
-            {filteredPhotos.map((photo, index) => (
-              <motion.div 
-                key={photo.id} 
-                layout 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className={`mb-8 cursor-pointer group shadow-sm overflow-hidden border transition-colors duration-1000 ${borderClass} ${isSystemDark ? 'bg-black' : 'bg-white/50'}`} 
-                onClick={() => setSelectedPhoto(photo)}
-              >
-                <img 
-                  src={photo.url} 
-                  alt={photo.title}
-                  className={`w-full h-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-1000 ease-in-out hover:scale-105 ${isSystemDark ? 'opacity-80 group-hover:opacity-100' : ''}`} 
-                />
-              </motion.div>
-            ))}
+        {/* Error Redirect UI */}
+        {error && (
+          <motion.div className="flex flex-col items-center justify-center py-20 text-center">
+            <AlertCircle className="text-[#C5A572] mb-4" size={48} />
+            <p className="font-serif italic text-2xl text-gray-400 mb-2">{error}</p>
+          </motion.div>
+        )}
+
+        {/* Photo Rendering */}
+        {loading ? (
+          <div className="h-64 flex flex-col items-center justify-center gap-4 text-gray-500">
+            <Loader2 className="animate-spin text-[#C5A572]" size={32} />
+            <p className="text-[10px] tracking-widest uppercase">Fetching Visuals...</p>
           </div>
         ) : (
-          <div className="text-center py-40 text-gray-400 font-serif italic text-xl">
-            No photos found in this specific collection yet.
-          </div>
+          eventGroups.map((event, gIndex) => (
+            <section 
+              key={`group-${event.name}-${gIndex}`} // Fix: Unique key combining name and index
+              id={event.name.replace(/\s+/g, '-').toLowerCase()} 
+              className="mb-32 scroll-mt-32"
+            >
+              {!subCategoryId && (
+                <div className="flex items-center gap-4 mb-12">
+                  <h3 className={`text-sm tracking-[0.3em] uppercase font-sans font-semibold ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>
+                    {event.name}
+                  </h3>
+                  <div className={`h-[1px] flex-grow ${isDarkMode ? 'bg-white/5' : 'bg-black/5'}`}></div>
+                </div>
+              )}
+
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                {event.photos.map((photo, pIndex) => (
+                  <motion.div 
+                    key={photo.id || `photo-${gIndex}-${pIndex}`} 
+                    layout 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: pIndex * 0.02 }}
+                    className={`cursor-pointer group shadow-sm overflow-hidden border transition-colors duration-1000 ${borderClass} ${isDarkMode ? 'bg-black' : 'bg-white/50'}`} 
+                    onClick={() => setSelectedPhoto(photo)}
+                  >
+                    <SmartImage 
+                      src={photo.url} 
+                      alt={photo.title}
+                      width={photo.width}
+                      height={photo.height}
+                      className={`w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-[1500ms] ease-out hover:scale-110 ${isDarkMode ? 'opacity-80 group-hover:opacity-100' : ''}`} 
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          ))
         )}
       </div>
 
@@ -125,12 +171,11 @@ export default function Gallery() {
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[150] bg-[#0A0E0C]/95 flex flex-col items-center justify-center p-4 backdrop-blur-md" 
+            className="fixed inset-0 z-[150] bg-[#0A0E0C]/98 flex flex-col items-center justify-center p-4 backdrop-blur-xl" 
             onClick={() => setSelectedPhoto(null)}
           >
-            {/* Action Bar */}
             <div className="absolute top-0 w-full p-6 flex justify-between items-center text-white">
-              <div className="flex flex-col">
+              <div className="flex flex-col text-left">
                 <span className="text-[9px] tracking-[0.3em] text-[#C5A572] uppercase font-bold">Personal Use Only</span>
                 <span className="text-xs font-serif italic uppercase tracking-widest mt-1 opacity-80">Tag @arthur0_2025</span>
               </div>
@@ -138,40 +183,40 @@ export default function Gallery() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={(e) => handleCopyLink(e, selectedPhoto.url)}
-                  className="flex items-center gap-2 bg-white/10 border border-white/20 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest group"
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest group"
                 >
                   {copied ? <Check size={14} className="text-green-400" /> : <Share2 size={14} />}
-                  {copied ? 'Link Copied' : 'Share to Instagram'}
+                  {copied ? 'Link Copied' : 'Share'}
                 </button>
 
                 <a 
                   href={selectedPhoto.url} 
-                  download={`ArthuroVisuals-${displayTitle.replace(/\s+/g, '-')}-${selectedPhoto.id}.jpg`}
-                  className="flex items-center gap-2 bg-white/10 border border-white/20 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest"
+                  download={`ArthuroVisuals-${selectedPhoto.id}.jpg`}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest"
                   onClick={(e) => e.stopPropagation()} 
                 >
                   <Download size={14} />
                   Download
                 </a>
                 
-                <button className="ml-4 p-2 hover:bg-white/10 rounded-full transition-colors">
+                <button onClick={() => setSelectedPhoto(null)} className="ml-4 p-2 hover:bg-white/10 rounded-full transition-colors">
                   <X size={24} />
                 </button>
               </div>
             </div>
 
             <motion.img 
-              initial={{ scale: 0.95, opacity: 0 }} 
+              initial={{ scale: 0.9, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
-              transition={{ type: "spring", damping: 25 }}
+              transition={{ type: "spring", damping: 30 }}
               src={selectedPhoto.url} 
-              className="max-w-full max-h-[75vh] object-contain shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] px-4" 
+              className="max-w-full max-h-[80vh] object-contain shadow-2xl px-4" 
               onClick={(e) => e.stopPropagation()}
             />
             
             <div className="mt-10 text-center text-white/40 text-[9px] tracking-[0.4em] uppercase max-w-lg px-4 leading-loose font-sans">
-              Photos are free for personal use. If you post, please tag <span className="text-white opacity-100">@arthur0_2025</span>. <br />
-              Please do not apply filters. See <span className="text-[#C5A572] opacity-100">Privacy & Terms</span> in footer.
+              Free for personal use. Tag <span className="text-white">@arthur0_2025</span> if you post. <br />
+              Preserve the art—please do not apply filters.
             </div>
           </motion.div>
         )}

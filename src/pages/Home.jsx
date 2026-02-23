@@ -1,34 +1,52 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Camera, ArrowDown } from 'lucide-react';
+import { Camera, ArrowDown, Loader2 } from 'lucide-react';
 import { getEventPreviews } from '../utils/photoData';
 
 export default function Home({ isDarkMode }) {
-  const eventPreviews = getEventPreviews();
+  const [featuredImages, setFeaturedImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  // Theme logic driven by the prop from App.jsx
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await getEventPreviews();
+        // Extract all images from categories into one flat array for the rotator
+        if (data && data.length > 0) {
+          setFeaturedImages(data);
+        }
+      } catch (error) {
+        console.error("Failed to load featured photos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Automatic Rotation Logic (every 5 seconds)
+  useEffect(() => {
+    if (featuredImages.length <= 1) return;
+    
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredImages.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [featuredImages]);
+
   const themes = {
     globalBg: isDarkMode ? 'bg-[#0A0E0C]' : 'bg-[#FCFAF8]',
     heroText: isDarkMode ? 'text-white' : 'text-[#2F4538]',
     heroSub: isDarkMode ? 'text-gray-400' : 'text-[#2F4538]/70',
-    
-    // Alternating section colors for visual diversification
-    sections: isDarkMode 
-      ? [
-          { bg: 'bg-[#0A0E0C]', text: 'text-white', border: 'border-white/5' },
-          { bg: 'bg-[#161D1A]', text: 'text-white', border: 'border-white/5' },
-          { bg: 'bg-[#2F4538]', text: 'text-white', border: 'border-white/10' },
-        ]
-      : [
-          { bg: 'bg-[#FCFAF8]', text: 'text-[#2F4538]', border: 'border-gray-100' },
-          { bg: 'bg-[#F9F6F2]', text: 'text-[#2F4538]', border: 'border-gray-200' },
-          { bg: 'bg-[#F0F2F0]', text: 'text-[#2F4538]', border: 'border-gray-100' },
-        ]
+    sectionText: isDarkMode ? 'text-white' : 'text-[#2F4538]',
+    border: isDarkMode ? 'border-white/5' : 'border-black/5'
   };
 
   const scrollToGallery = () => {
-    document.getElementById('event-previews')?.scrollIntoView({ 
+    document.getElementById('featured-section')?.scrollIntoView({ 
       behavior: 'smooth', 
       block: 'start' 
     });
@@ -72,7 +90,6 @@ export default function Home({ isDarkMode }) {
           </motion.p>
         </motion.div>
 
-        {/* Scroll Indicator */}
         <motion.button 
           animate={{ y: [0, 12, 0] }} 
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }} 
@@ -81,67 +98,75 @@ export default function Home({ isDarkMode }) {
         >
           <ArrowDown className="w-6 h-6" />
         </motion.button>
-        
-        {/* Subtle Ambient Glow */}
-        <div className={`absolute inset-0 transition-opacity duration-1000 ${isDarkMode ? 'opacity-100' : 'opacity-40'} pointer-events-none`}>
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(197,165,114,0.05)_0%,_transparent_70%)]" />
-        </div>
       </section>
 
-      {/* Diversified Collection Sections */}
-      <div id="event-previews">
-        {eventPreviews.map((event, index) => {
-          const sectionTheme = themes.sections[index % themes.sections.length];
-          
-          return (
-            <section 
-              key={event.categoryName} 
-              className={`${sectionTheme.bg} py-32 px-6 transition-colors duration-1000 scroll-mt-20 border-t ${sectionTheme.border}`}
-            >
-              <div className="max-w-7xl mx-auto">
-                <motion.div 
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className={`flex justify-between items-end mb-12 border-b ${sectionTheme.border} pb-8`}
-                >
-                  <div>
-                    <span className="text-[10px] text-[#C5A572] tracking-[0.4em] uppercase block mb-3 font-medium">
-                      Collection
-                    </span>
-                    <h3 className={`text-4xl md:text-5xl font-serif capitalize italic transition-colors duration-1000 ${sectionTheme.text}`}>
-                      {event.categoryName}
-                    </h3>
-                  </div>
-                  <Link 
-                    to={`/${event.categoryName.replace(/\s+/g, '-')}`} 
-                    className={`group flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] transition-all duration-1000 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-[#C5A572]'}`}
-                  >
-                    Explore Gallery 
-                    <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
-                  </Link>
-                </motion.div>
+      {/* Rotating Featured Photos Section */}
+      <section id="featured-section" className="py-32 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <div className="h-[60vh] flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-[#C5A572]" />
+            </div>
+          ) : featuredImages.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+              
+              {/* Left Side: Info */}
+              <div className="lg:col-span-5">
+                <span className="text-[10px] text-[#C5A572] tracking-[0.4em] uppercase block mb-3 font-medium">
+                  Showcase
+                </span>
+                <h3 className={`text-5xl md:text-7xl font-serif italic mb-8 transition-colors duration-1000 ${themes.sectionText}`}>
+                  Featured Photos
+                </h3>
+                <p className="text-gray-500 text-sm max-w-md leading-relaxed mb-12 uppercase tracking-widest font-light">
+                  A curated rotation of visuals capturing the raw energy of sports and JROTC discipline.
+                </p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                  {event.photos.map((photo) => (
-                    <div key={photo.id} className={`relative group overflow-hidden shadow-2xl transition-colors duration-1000 ${isDarkMode ? 'bg-black' : 'bg-white'}`}>
-                      <div className="overflow-hidden">
-                        <img 
-                          src={photo.url} 
-                          alt={photo.title}
-                          loading="lazy"
-                          className={`w-full h-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-[1500ms] ease-out scale-[1.02] group-hover:scale-100 ${isDarkMode ? 'opacity-70 group-hover:opacity-100' : 'opacity-100'}`}
-                        />
-                      </div>
-                      <div className={`absolute inset-0 transition-opacity duration-700 pointer-events-none opacity-0 group-hover:opacity-100 ${isDarkMode ? 'bg-white/5' : 'bg-[#2F4538]/5'}`} />
-                    </div>
+                <Link 
+                  to={`/gallery/${featuredImages[currentIndex].categoryName.toLowerCase()}`} 
+                  className="group inline-flex items-center gap-4 text-[11px] uppercase tracking-[0.3em] text-[#C5A572] font-semibold"
+                >
+                  View Collection: {featuredImages[currentIndex].categoryName}
+                  <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+                </Link>
+              </div>
+
+              {/* Right Side: Rotating Image Display */}
+              <div className="lg:col-span-7 relative aspect-[4/5] md:aspect-[16/10] overflow-hidden shadow-2xl bg-black border border-white/5">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentIndex}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute inset-0"
+                  >
+                    <img 
+                      src={featuredImages[currentIndex].image} 
+                      alt="Featured visual"
+                      className={`w-full h-full object-cover grayscale transition-all duration-[2000ms] group-hover:grayscale-0 ${isDarkMode ? 'opacity-80' : 'opacity-100'}`}
+                    />
+                    {/* Subtle Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Progress Indicators */}
+                <div className="absolute bottom-8 right-8 flex gap-3 z-20">
+                  {featuredImages.map((_, idx) => (
+                    <div 
+                      key={idx}
+                      className={`h-1 transition-all duration-500 ${idx === currentIndex ? 'w-8 bg-[#C5A572]' : 'w-2 bg-white/20'}`}
+                    />
                   ))}
                 </div>
               </div>
-            </section>
-          );
-        })}
-      </div>
+
+            </div>
+          )}
+        </div>
+      </section>
     </motion.div>
   );
 }

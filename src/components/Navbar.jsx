@@ -8,13 +8,14 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const location = useLocation();
 
+  // UPDATED: All paths now include /gallery/ to match App.jsx
   const jrotcEvents = [
-    { name: 'South Broward', path: '/jrotc/south-broward' },
-    { name: 'Yuletide Parade 25-26', path: '/jrotc/yuletide-parade' },
-    { name: 'Open House 25-26', path: '/jrotc/open-house' },
-    { name: 'Raiders State Comp', path: '/jrotc/raiders-state' },
-    { name: 'Raider County', path: '/jrotc/raiders-county' },
-    { name: 'Western Comp', path: '/jrotc/western-comp' },
+    { name: 'South Broward', path: '/gallery/jrotc/south-broward' },
+    { name: 'Yuletide Parade 25-26', path: '/gallery/jrotc/yuletide-parade-25-26' },
+    { name: 'Open House 25-26', path: '/gallery/jrotc/open-house-25-26' },
+    { name: 'Raiders State Comp', path: '/gallery/jrotc/raiders-state-comp' },
+    { name: 'Raider County', path: '/gallery/jrotc/raider-county' },
+    { name: 'Western Comp', path: '/gallery/jrotc/western-comp' },
   ];
 
   const closeAll = () => {
@@ -22,7 +23,6 @@ export default function Navbar() {
     setActiveDropdown(null);
   };
 
-  // Close mobile menu on escape key
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape') closeAll();
@@ -33,7 +33,6 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-gray-100 py-5 px-6 md:px-12 flex justify-between items-center">
-      {/* Logo Area */}
       <Link 
         to="/" 
         onClick={closeAll} 
@@ -45,7 +44,6 @@ export default function Navbar() {
       {/* --- DESKTOP MENU --- */}
       <div className="hidden lg:flex gap-10 items-center text-[10px] uppercase tracking-[0.2em] font-medium text-[#2F4538]">
         
-        {/* JROTC Dropdown with Hover Flare */}
         <div 
           className="relative py-2 group"
           onMouseEnter={() => setActiveDropdown('jrotc')}
@@ -78,17 +76,25 @@ export default function Navbar() {
           </AnimatePresence>
         </div>
 
-        {/* Standard Links with Underline Flare */}
-        {['Sports', 'Social Events', 'Landscape', 'About'].map((item) => (
+        {/* UPDATED: Path includes /gallery/ for sports, social, and landscape */}
+        {['Sports', 'Social Events', 'Landscape'].map((item) => (
           <Link 
             key={item} 
-            to={`/${item.toLowerCase().replace(/\s+/g, '-')}`} 
+            to={`/gallery/${item.toLowerCase().replace(/\s+/g, '-')}`} 
             className={`relative group transition-colors hover:text-[#C5A572] ${location.pathname.includes(item.toLowerCase().replace(/\s+/g, '-')) ? 'text-[#C5A572]' : ''}`}
           >
             {item}
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#C5A572] transition-all duration-300 group-hover:w-full" />
           </Link>
         ))}
+
+        <Link 
+          to="/about" 
+          className={`relative group transition-colors hover:text-[#C5A572] ${location.pathname === '/about' ? 'text-[#C5A572]' : ''}`}
+        >
+          About
+          <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#C5A572] transition-all duration-300 group-hover:w-full" />
+        </Link>
 
         <div className="w-[1px] h-4 bg-gray-200 mx-2" />
 
@@ -108,7 +114,7 @@ export default function Navbar() {
         {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
 
-      {/* --- MOBILE OVERLAY (Bulletproof Version) --- */}
+      {/* --- MOBILE OVERLAY --- */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -117,10 +123,8 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 bg-white z-[105] flex flex-col lg:hidden"
           >
-            {/* Scrollable Content Container */}
             <div className="flex flex-col pt-32 px-10 gap-8 text-sm uppercase tracking-[0.3em] font-light h-full overflow-y-auto pb-12">
               
-              {/* JROTC Accordion */}
               <div className="w-full">
                 <button 
                   onClick={() => setActiveDropdown(activeDropdown === 'jrotc' ? null : 'jrotc')}
@@ -146,11 +150,10 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Main Links */}
               {[
-                { name: 'Sports', path: '/sports' },
-                { name: 'Social Events', path: '/social-events' },
-                { name: 'Landscape', path: '/landscape' },
+                { name: 'Sports', path: '/gallery/sports' },
+                { name: 'Social Events', path: '/gallery/social-events' },
+                { name: 'Landscape', path: '/gallery/landscape' },
                 { name: 'About', path: '/about' }
               ].map((link) => (
                 <Link 
