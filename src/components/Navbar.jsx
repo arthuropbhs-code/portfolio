@@ -8,7 +8,6 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const location = useLocation();
 
-  // UPDATED: All paths now include /gallery/ to match App.jsx
   const jrotcEvents = [
     { name: 'South Broward', path: '/gallery/jrotc/south-broward' },
     { name: 'Yuletide Parade 25-26', path: '/gallery/jrotc/yuletide-parade-25-26' },
@@ -21,6 +20,16 @@ export default function Navbar() {
   const closeAll = () => {
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
+    document.body.style.overflow = 'unset';
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    if (!isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
   };
 
   useEffect(() => {
@@ -28,28 +37,30 @@ export default function Navbar() {
       if (e.key === 'Escape') closeAll();
     };
     window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset';
+    };
   }, []);
 
   return (
-    <nav className="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-gray-100 py-5 px-6 md:px-12 flex justify-between items-center">
+    <nav className="fixed top-0 w-full z-[150] bg-white border-b border-gray-100 py-5 px-6 md:px-12 flex justify-between items-center transition-all duration-300">
       <Link 
         to="/" 
         onClick={closeAll} 
-        className="text-2xl font-serif tracking-tighter hover:text-[#C5A572] transition-colors z-[110] text-[#2F4538]"
+        className="text-2xl font-serif tracking-tighter hover:text-[#C5A572] transition-colors z-[200] text-[#2F4538]"
       >
         Arthuro Visuals
       </Link>
 
       {/* --- DESKTOP MENU --- */}
       <div className="hidden lg:flex gap-10 items-center text-[10px] uppercase tracking-[0.2em] font-medium text-[#2F4538]">
-        
         <div 
           className="relative py-2 group"
           onMouseEnter={() => setActiveDropdown('jrotc')}
           onMouseLeave={() => setActiveDropdown(null)}
         >
-          <button className="flex items-center gap-1 group-hover:text-[#C5A572] transition-colors cursor-default">
+          <button className="flex items-center gap-1 group-hover:text-[#C5A572] transition-colors cursor-default outline-none">
             JROTC <ChevronDown size={10} className={`transition-transform duration-300 ${activeDropdown === 'jrotc' ? 'rotate-180' : ''}`} />
           </button>
           
@@ -76,7 +87,6 @@ export default function Navbar() {
           </AnimatePresence>
         </div>
 
-        {/* UPDATED: Path includes /gallery/ for sports, social, and landscape */}
         {['Sports', 'Social Events', 'Landscape'].map((item) => (
           <Link 
             key={item} 
@@ -108,8 +118,9 @@ export default function Navbar() {
 
       {/* --- MOBILE TRIGGER --- */}
       <button 
-        className="lg:hidden z-[110] p-2 text-[#2F4538]"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden z-[200] p-2 text-[#2F4538] outline-none"
+        onClick={toggleMobileMenu}
+        aria-label="Toggle menu"
       >
         {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
@@ -118,36 +129,47 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 bg-white z-[105] flex flex-col lg:hidden"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 bg-white z-[180] flex flex-col lg:hidden"
           >
-            <div className="flex flex-col pt-32 px-10 gap-8 text-sm uppercase tracking-[0.3em] font-light h-full overflow-y-auto pb-12">
+            <div className="flex flex-col pt-32 px-10 gap-8 text-sm uppercase tracking-[0.3em] font-light h-full overflow-y-auto pb-20 text-[#2F4538]">
               
+              {/* Mobile JROTC Dropdown */}
               <div className="w-full">
                 <button 
                   onClick={() => setActiveDropdown(activeDropdown === 'jrotc' ? null : 'jrotc')}
-                  className="flex items-center justify-between w-full border-b border-gray-100 pb-4 text-[#2F4538]"
+                  className="flex items-center justify-between w-full border-b border-gray-100 pb-4 text-[#2F4538] outline-none"
                 >
                   <span className="font-medium">JROTC</span>
                   <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'jrotc' ? 'rotate-180 text-[#C5A572]' : ''}`} />
                 </button>
                 
-                {activeDropdown === 'jrotc' && (
-                  <div className="flex flex-col gap-6 pl-4 pt-6 pb-2">
-                    {jrotcEvents.map((event) => (
-                      <Link 
-                        key={event.name} 
-                        to={event.path} 
-                        onClick={closeAll} 
-                        className="text-gray-400 text-xs tracking-[0.2em] hover:text-[#C5A572]"
-                      >
-                        {event.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                <AnimatePresence>
+                  {activeDropdown === 'jrotc' && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden bg-gray-50/50"
+                    >
+                      <div className="flex flex-col gap-5 pl-4 pt-6 pb-6">
+                        {jrotcEvents.map((event) => (
+                          <Link 
+                            key={event.name} 
+                            to={event.path} 
+                            onClick={closeAll} 
+                            className="text-gray-500 text-xs tracking-[0.2em] hover:text-[#C5A572] py-1"
+                          >
+                            {event.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {[

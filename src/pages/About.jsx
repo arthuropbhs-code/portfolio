@@ -36,12 +36,13 @@ export default function About({ isDarkMode }) {
         >
           <div className={`aspect-[4/5] overflow-hidden rounded-sm shadow-2xl border ${theme.cardBorder} ${isDarkMode ? 'bg-black' : 'bg-gray-100'}`}>
             <img 
-              /* Updated to Cloudinary URL so you can delete local files */
-              src="https://res.cloudinary.com/dauzn6kas/image/upload/f_auto,q_auto/v1/jrotc/featured_photo" 
+              /* UPDATED: Direct path to your Raiders State Comp photo */
+              src="https://res.cloudinary.com/dauzn6kas/image/upload/f_auto,q_auto/v1/jrotc/Raiders-State-Comp/IMG_2245" 
               alt="Arthuro De Almeida" 
               className={`w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out hover:scale-105 ${isDarkMode ? 'opacity-80 hover:opacity-100' : ''}`}
             />
           </div>
+          {/* Decorative Gold Accent Box */}
           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#C5A572]/10 -z-10" />
         </motion.div>
 
