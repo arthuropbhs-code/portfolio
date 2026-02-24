@@ -15,14 +15,15 @@ export default function Gallery({ isDarkMode }) {
   const [copied, setCopied] = useState(false);
 
   // Helper to format names (e.g., "south-broward" -> "South Broward")
-  const formatName = (str) => {
-    if (!str) return "";
-    return str
-      .replace(/-/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+// Helper to format names (e.g., "south-broward" -> "South Broward" or "flag_football" -> "Flag Football")
+const formatName = (str) => {
+  if (!str) return "";
+  return str
+    .replace(/[_-]/g, ' ') // Match both underscores and dashes
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
   useEffect(() => {
     const loadGallery = async () => {

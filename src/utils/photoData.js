@@ -1,6 +1,14 @@
 const CLOUD_NAME = "dauzn6kas";
 
+/** * Added Flag Football specific events to the VALID_EVENTS list 
+ * to ensure they group correctly within the gallery.
+ */
 const VALID_EVENTS = [
+  // Flag Football
+  'Flag-Football-Season',
+  'Flag-Football-Playoffs',
+  
+  // JROTC
   'Raiders-State-Comp',
   'South-Broward',
   'Yuletide-Parade-25-26',
@@ -11,11 +19,19 @@ const VALID_EVENTS = [
 
 /**
  * Fetches and groups images from Cloudinary for a specific category.
+ * Updated to handle "flag_football" or "jrotc" dynamically.
  */
 export const fetchCloudinaryGallery = async (folderName = "jrotc") => {
   try {
-    const safeFolder = folderName === "gallery" ? "jrotc" : folderName;
-    const categoryTag = safeFolder.toLowerCase().replace(/-/g, '');
+    // Determine the correct folder; default to jrotc if generic 'gallery' is passed
+    const safeFolder = (folderName === "gallery" || !folderName) ? "jrotc" : folderName;
+    
+    /**
+     * Tagging Logic: 
+     * Cloudinary tags usually strip special characters. 
+     * This turns "flag_football" into "flagfootball" for the API request.
+     */
+    const categoryTag = safeFolder.toLowerCase().replace(/[\s_-]/g, '');
     
     const response = await fetch(
       `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${categoryTag}.json?cb=${Date.now()}`
@@ -66,6 +82,7 @@ export const fetchCloudinaryGallery = async (folderName = "jrotc") => {
 
 /**
  * Fetches one "featured_photo" for each main folder to act as a cover on the Home page.
+ * Updated categoryName logic to handle underscores (e.g., FLAG FOOTBALL).
  */
 export const getEventPreviews = async () => {
   try {
@@ -74,7 +91,6 @@ export const getEventPreviews = async () => {
     );
     
     if (!response.ok) {
-        // Fallback if the tag list is empty or hasn't been enabled in Cloudinary settings
         return [
             { 
               categoryName: "JROTC", 
@@ -86,14 +102,13 @@ export const getEventPreviews = async () => {
 
     const data = await response.json();
 
-    // This takes the list of images tagged 'featured_photo' and creates the preview objects
     return data.resources.map(res => {
-      // Logic: if public_id is "jrotc/event/photo", the category is "jrotc"
       const pathParts = res.public_id.split('/');
       const category = pathParts[0]; 
 
       return {
-        categoryName: category.toUpperCase(),
+        // Formats "flag_football" -> "FLAG FOOTBALL" for the UI
+        categoryName: category.toUpperCase().replace(/_/g, ' '),
         path: `/gallery/${category}`,
         image: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/${res.public_id}`
       };
