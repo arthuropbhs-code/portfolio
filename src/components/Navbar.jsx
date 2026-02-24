@@ -23,7 +23,7 @@ export default function Navbar() {
       name: 'Flag Football',
       id: 'flag-football',
       events: [
-        { name: 'Varsity Season', path: '/gallery/flag_football/flag-football-season' },
+        { name: 'In Season', path: '/gallery/flag_football/flag-football-season' },
         { name: 'Playoffs', path: '/gallery/flag_football/flag-football-playoffs' },
       ]
     }

@@ -67,7 +67,7 @@ export default function About({ isDarkMode }) {
             </p>
             <p className={`text-sm italic pt-4 border-t ${theme.accentLine} flex items-center gap-2`}>
               <span className="w-1.5 h-1.5 rounded-full bg-[#C5A572]" />
-              Based in South Florida, available for travel and commissions.
+              Based in South Florida
             </p>
           </div>
         </motion.div>

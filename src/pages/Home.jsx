@@ -103,7 +103,7 @@ export default function Home({ isDarkMode }) {
           </motion.h1>
           
           <motion.p variants={itemVars} className={`${themes.heroSub} text-xs md:text-sm font-light tracking-[0.5em] uppercase transition-colors duration-1000`}>
-            By Arthuro De Almeida
+            Digital Portfolio 2026
           </motion.p>
         </motion.div>
 
