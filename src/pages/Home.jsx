@@ -17,7 +17,7 @@ export default function Home({ isDarkMode }) {
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const testimonials = [
     {
-      quote: "Arthuro captured the intensity of the drill meet perfectly. The shots feel cinematic.",
+      quote: "All your pictures are so tuff.",
       author: "Battalion Commander",
       org: "Pompano Beach High JROTC Program"
     },
@@ -331,16 +331,18 @@ export default function Home({ isDarkMode }) {
                 </div>
                 <div className="flex flex-col gap-3">
                   <label className="text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold">Event Date</label>
-                  <input name="date" required type="date" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} />
+                  <input 
+                    name="date" 
+                    required 
+                    type="date" 
+                    className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm w-full`} 
+                  />
                 </div>
                 <div className="flex flex-col gap-3">
                   <label className="text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold">Location</label>
-                  <input name="location" required type="text" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} placeholder="Stadium or School" />
+                  <input name="location" required type="text" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} placeholder="Address" />
                 </div>
                 <div className="md:col-span-2 mt-6">
-                  <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-widest">
-                    Note: Submissions are subject to media release agreements.
-                  </p>
                   <button 
                     type="submit" 
                     disabled={isSubmitting}

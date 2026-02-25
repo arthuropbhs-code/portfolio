@@ -5,3 +5,15 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* Styling the date input for dark mode consistency */
+input[type="date"] {
+    color-scheme: dark; /* This tells the browser to use a dark-themed calendar picker if available */
+}
+
+/* Customizing the calendar icon color */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.8); /* Adjusts the icon brightness to match your gold/white text */
+    padding: 5px;
+}
