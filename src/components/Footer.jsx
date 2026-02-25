@@ -29,22 +29,34 @@ export default function Footer() {
       <AnimatePresence>
         {isPrivacyOpen && (
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            /* FIX: Lowered z-index to 80 so Navbar (usually z-100) stays on top.
+               Added pt-24 to prevent the modal content from hiding behind the mobile header.
+            */
+            className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm flex items-start md:items-center justify-center p-4 pt-24 md:pt-4"
             onClick={() => setIsPrivacyOpen(false)}
           >
             <motion.div 
-              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="bg-white max-w-2xl w-full p-8 md:p-12 relative shadow-2xl overflow-y-auto max-h-[80vh]"
+              initial={{ scale: 0.95, y: 20 }} 
+              animate={{ scale: 1, y: 0 }} 
+              exit={{ scale: 0.95, y: 20 }}
+              /* FIX: Set max-height to 75vh on mobile so it doesn't run off the screen.
+              */
+              className="bg-white max-w-2xl w-full p-8 md:p-12 relative shadow-2xl overflow-y-auto max-h-[75vh] md:max-h-[80vh] rounded-sm"
               onClick={(e) => e.stopPropagation()}
             >
-              <button onClick={() => setIsPrivacyOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-black">
+              <button 
+                onClick={() => setIsPrivacyOpen(false)} 
+                className="absolute top-6 right-6 text-gray-400 hover:text-black p-2"
+              >
                 <X size={20} />
               </button>
 
               <h3 className="text-3xl font-serif italic mb-8 text-[#2F4538]">Privacy & Image Rights</h3>
               
-              <div className="space-y-6 text-sm text-gray-600 font-sans font-light leading-relaxed">
+              <div className="space-y-6 text-sm text-gray-600 font-sans font-light leading-relaxed text-left">
                 <section>
                   <h4 className="text-[10px] tracking-widest uppercase font-bold text-black mb-2 flex items-center gap-2">
                     <Shield size={14} className="text-[#C5A572]" /> Media Release
@@ -56,7 +68,10 @@ export default function Footer() {
                   <h4 className="text-[10px] tracking-widest uppercase font-bold text-black mb-2 flex items-center gap-2">
                     <Mail size={14} className="text-[#C5A572]" /> Takedown Requests
                   </h4>
-                  <p>I prioritize the privacy and safety of all subjects. If you are a parent or guardian and wish for a specific image of your child to be removed from this portfolio, please contact me directly at <span className="text-[#C5A572] font-medium underline">arthuro.pbhs@gmail.com</span>. Please include the image ID or a screenshot of the photo in question.</p>
+                  <p>
+                    I prioritize the privacy and safety of all subjects. If you are a parent or guardian and wish for a specific image of your child to be removed from this portfolio, please contact me directly at 
+                    <span className="text-[#C5A572] font-medium underline ml-1">arthuro.pbhs@gmail.com</span>.
+                  </p>
                 </section>
 
                 <section>

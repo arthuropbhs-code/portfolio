@@ -165,59 +165,69 @@ const formatName = (str) => {
         )}
       </div>
 
-      {/* Lightbox */}
+{/* Lightbox */}
       <AnimatePresence>
         {selectedPhoto && (
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[150] bg-[#0A0E0C]/98 flex flex-col items-center justify-center p-4 backdrop-blur-xl" 
+            className="fixed inset-0 z-[150] bg-[#0A0E0C]/98 flex flex-col items-center justify-between py-6 backdrop-blur-xl overflow-hidden" 
             onClick={() => setSelectedPhoto(null)}
           >
-            <div className="absolute top-0 w-full p-6 flex justify-between items-center text-white">
+            {/* --- TOP BAR: Stats & Close --- */}
+            <div className="w-full px-6 flex justify-between items-start text-white">
               <div className="flex flex-col text-left">
                 <span className="text-[9px] tracking-[0.3em] text-[#C5A572] uppercase font-bold">Personal Use Only</span>
-                <span className="text-xs font-serif italic uppercase tracking-widest mt-1 opacity-80">Tag @arthur0_2025</span>
+                <span className="text-[10px] font-serif italic uppercase tracking-widest mt-1 opacity-80">Tag @arthur0_2025</span>
               </div>
               
-              <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setSelectedPhoto(null)} 
+                className="p-2 hover:bg-white/10 rounded-full transition-colors -mt-2"
+              >
+                <X size={28} />
+              </button>
+            </div>
+
+            {/* --- IMAGE CONTAINER --- */}
+            <div className="flex-grow flex items-center justify-center w-full px-2">
+              <motion.img 
+                initial={{ scale: 0.9, opacity: 0 }} 
+                animate={{ scale: 1, opacity: 1 }} 
+                transition={{ type: "spring", damping: 30 }}
+                src={selectedPhoto.url} 
+                className="max-w-full max-h-[65vh] md:max-h-[75vh] object-contain shadow-2xl" 
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+
+            {/* --- BOTTOM BAR: Actions & Instructions --- */}
+            <div className="w-full flex flex-col items-center gap-6 pb-4">
+              <div className="flex items-center gap-3 w-full px-6 md:justify-center">
                 <button
                   onClick={(e) => handleCopyLink(e, selectedPhoto.url)}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest group"
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white/5 border border-white/10 px-5 py-3 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest"
                 >
                   {copied ? <Check size={14} className="text-green-400" /> : <Share2 size={14} />}
-                  {copied ? 'Link Copied' : 'Share'}
+                  {copied ? 'Copied' : 'Share'}
                 </button>
 
                 <a 
                   href={selectedPhoto.url} 
                   download={`ArthuroVisuals-${selectedPhoto.id}.jpg`}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-5 py-2.5 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest"
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white/5 border border-white/10 px-5 py-3 rounded-sm hover:bg-[#C5A572] hover:border-[#C5A572] transition-all text-[10px] uppercase tracking-widest"
                   onClick={(e) => e.stopPropagation()} 
                 >
                   <Download size={14} />
                   Download
                 </a>
-                
-                <button onClick={() => setSelectedPhoto(null)} className="ml-4 p-2 hover:bg-white/10 rounded-full transition-colors">
-                  <X size={24} />
-                </button>
               </div>
-            </div>
-
-            <motion.img 
-              initial={{ scale: 0.9, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }} 
-              transition={{ type: "spring", damping: 30 }}
-              src={selectedPhoto.url} 
-              className="max-w-full max-h-[80vh] object-contain shadow-2xl px-4" 
-              onClick={(e) => e.stopPropagation()}
-            />
-            
-            <div className="mt-10 text-center text-white/40 text-[9px] tracking-[0.4em] uppercase max-w-lg px-4 leading-loose font-sans">
-              Free for personal use. Tag <span className="text-white">@arthur0_2025</span> if you post. <br />
-              Preserve the art—please do not apply filters.
+              
+              <div className="text-center text-white/40 text-[8px] md:text-[9px] tracking-[0.3em] md:tracking-[0.4em] uppercase max-w-sm px-6 leading-relaxed font-sans">
+                Complimentary for personal use • <br className="hidden md:block" />
+                Preserve the art—please do not apply filters.
+              </div>
             </div>
           </motion.div>
         )}
