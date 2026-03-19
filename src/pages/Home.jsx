@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Camera, ArrowDown, Loader2, Target, Zap, Map, Quote, CheckCircle2 } from 'lucide-react';
+import { Camera, ArrowDown, Loader2, Target, Zap, Map, CheckCircle2 } from 'lucide-react';
 import { getEventPreviews } from '../utils/photoData';
 
 export default function Home({ isDarkMode }) {
@@ -12,21 +12,6 @@ export default function Home({ isDarkMode }) {
   // Form Submission States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // State for Testimonial Rotation
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
-  const testimonials = [
-    {
-      quote: "All your pictures are so tuff.",
-      author: "Battalion Commander",
-      org: "Pompano Beach High JROTC Program"
-    },
-    {
-      quote: "The best sports photography we've had all season. He has an eye for the action.",
-      author: "Head Coach",
-      org: "South Broward Athletics"
-    }
-  ];
 
   // --- Scroll Tracking for Dynamic Background Colors ---
   const containerRef = useRef(null);
@@ -68,14 +53,6 @@ export default function Home({ isDarkMode }) {
     }, 5000);
     return () => clearInterval(timer);
   }, [featuredImages]);
-
-  // Automatic Rotation Logic (Testimonials)
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [testimonials.length]);
 
   // Booking Form Submission Handler
   const handleBookingSubmit = async (e) => {
@@ -242,31 +219,6 @@ export default function Home({ isDarkMode }) {
               </div>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* --- TESTIMONIALS SECTION --- */}
-      <section className={`py-24 border-t ${themes.border} overflow-hidden`}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <Quote className="text-[#C5A572] mx-auto mb-8 opacity-40" size={32} />
-          <div className="relative h-40 md:h-32">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={testimonialIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute inset-0"
-              >
-                <p className={`text-xl md:text-2xl font-serif italic mb-6 leading-relaxed transition-colors duration-1000 ${themes.sectionText}`}>
-                  "{testimonials[testimonialIndex].quote}"
-                </p>
-                <p className="text-[9px] tracking-[0.4em] uppercase text-[#C5A572] font-medium">
-                  {testimonials[testimonialIndex].author} • {testimonials[testimonialIndex].org}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
         </div>
       </section>
 
