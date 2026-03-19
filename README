@@ -1,18 +1,21 @@
-[1.1.0] - 2026-02-25
+[v1.1.5] — The Expansion Update
+Release Date: March 19, 2026
+
 Added
-Dual-Theme Support: Comprehensive Light and Dark mode styling using CSS-in-JS logic.
-Testimonials: Automatic rotating UI for client feedback.
-Interactive Booking: Fully functional Formspree integration with AJAX submission and error handling.
+Dynamic Event Routing: Integrated a new filtering system in Gallery.jsx to automatically pull sub-categories from Cloudinary.
+JROTC Collection: Added the District Competition gallery.
+Navbar Evolution: Re-engineered the desktop and mobile navigation to support nested sports categories and expanding JROTC event lists.
 
-Fixed
-Resolved framer-motion calculation error by enforcing relative positioning on the main container.
-Fixed 403 Forbidden API errors by updating CORS headers and AJAX settings.
-Corrected background color "ghosting" during scroll transitions.
+Refinements & Fixes
+Brand Typography: Updated formatName helper to ensure "JROTC" maintains correct capitalization across the UI.
+Lightbox Optimization: Enhanced image scaling logic for vertical "tuff" shots on mobile devices.
+Theme Continuity: Smoothed out the 1000ms transition between Dark/Light modes on gallery pages.
 
-Current Version: 1.1.0
+Current Version: 1.1.5
 
 Previous Versions:
-v1.1.0 (Current): Implemented theme-aware UI logic. Added dynamic scroll-based background transitions (Light/Dark mode) and integrated Formspree AJAX booking with custom success states.
+v1.1.5 (Current): Added new District Competition Gallery.
+v1.1.0: Implemented theme-aware UI logic. Added dynamic scroll-based background transitions (Light/Dark mode) and integrated Formspree AJAX booking with custom success states.
 v1.0.5: General Bug Fixes.
 v1.0.0 (The Cinematic Update): Complete home page overhaul featuring high-end cinematic transitions and a curated visual experience.
 v0.8.0: Email configuration updates and layout bug fixes.

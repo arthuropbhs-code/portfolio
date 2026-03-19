@@ -9,6 +9,7 @@ const VALID_EVENTS = [
   'Flag-Football-Playoffs',
   
   // JROTC
+  'District-Comp',
   'Raiders-State-Comp',
   'South-Broward',
   'Yuletide-Parade-25-26',

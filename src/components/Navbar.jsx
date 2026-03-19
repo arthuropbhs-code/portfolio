@@ -10,6 +10,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const jrotcEvents = [
+    { name: 'District Comp 25-26', path: '/gallery/jrotc/district-comp' },
     { name: 'South Broward', path: '/gallery/jrotc/south-broward' },
     { name: 'Yuletide Parade 25-26', path: '/gallery/jrotc/yuletide-parade-25-26' },
     { name: 'Open House 25-26', path: '/gallery/jrotc/open-house-25-26' },
@@ -24,7 +25,7 @@ export default function Navbar() {
       id: 'flag-football',
       events: [
         { name: 'In Season', path: '/gallery/flag_football/flag-football-season' },
-        { name: 'Playoffs', path: '/gallery/flag_football/flag-football-playoffs' },
+        { name: 'Out of Season', path: '/gallery/flag_football/flag-football-playoffs' },
       ]
     }
   ];

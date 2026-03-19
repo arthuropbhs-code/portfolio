@@ -15,15 +15,18 @@ export default function Gallery({ isDarkMode }) {
   const [copied, setCopied] = useState(false);
 
   // Helper to format names (e.g., "south-broward" -> "South Broward")
-// Helper to format names (e.g., "south-broward" -> "South Broward" or "flag_football" -> "Flag Football")
-const formatName = (str) => {
-  if (!str) return "";
-  return str
-    .replace(/[_-]/g, ' ') // Match both underscores and dashes
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+  const formatName = (str) => {
+    if (!str) return "";
+    
+    // ADDED: Special case for JROTC to keep it all caps
+    if (str.toLowerCase() === 'jrotc') return 'JROTC';
+
+    return str
+      .replace(/[_-]/g, ' ') // Match both underscores and dashes
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -59,7 +62,6 @@ const formatName = (str) => {
   const borderClass = isDarkMode ? 'border-white/5' : 'border-black/5';
 
   // --- TITLE LOGIC ---
-  // If subCategoryId exists, it takes priority over categoryId.
   const mainTitle = subCategoryId ? formatName(subCategoryId) : formatName(categoryId);
   const topLabel = subCategoryId ? formatName(categoryId) : "Collection";
 
@@ -125,7 +127,7 @@ const formatName = (str) => {
         ) : (
           eventGroups.map((event, gIndex) => (
             <section 
-              key={`group-${event.name}-${gIndex}`} // Fix: Unique key combining name and index
+              key={`group-${event.name}-${gIndex}`} 
               id={event.name.replace(/\s+/g, '-').toLowerCase()} 
               className="mb-32 scroll-mt-32"
             >
@@ -165,7 +167,7 @@ const formatName = (str) => {
         )}
       </div>
 
-{/* Lightbox */}
+      {/* Lightbox */}
       <AnimatePresence>
         {selectedPhoto && (
           <motion.div 
@@ -175,7 +177,6 @@ const formatName = (str) => {
             className="fixed inset-0 z-[150] bg-[#0A0E0C]/98 flex flex-col items-center justify-between py-6 backdrop-blur-xl overflow-hidden" 
             onClick={() => setSelectedPhoto(null)}
           >
-            {/* --- TOP BAR: Stats & Close --- */}
             <div className="w-full px-6 flex justify-between items-start text-white">
               <div className="flex flex-col text-left">
                 <span className="text-[9px] tracking-[0.3em] text-[#C5A572] uppercase font-bold">Personal Use Only</span>
@@ -190,7 +191,6 @@ const formatName = (str) => {
               </button>
             </div>
 
-            {/* --- IMAGE CONTAINER --- */}
             <div className="flex-grow flex items-center justify-center w-full px-2">
               <motion.img 
                 initial={{ scale: 0.9, opacity: 0 }} 
@@ -202,7 +202,6 @@ const formatName = (str) => {
               />
             </div>
 
-            {/* --- BOTTOM BAR: Actions & Instructions --- */}
             <div className="w-full flex flex-col items-center gap-6 pb-4">
               <div className="flex items-center gap-3 w-full px-6 md:justify-center">
                 <button
