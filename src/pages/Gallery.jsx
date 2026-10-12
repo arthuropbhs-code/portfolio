@@ -29,22 +29,24 @@ export default function Gallery({ isDarkMode }) {
   };
 
   useEffect(() => {
+    let redirectTimer;
+
     const loadGallery = async () => {
       setLoading(true);
       setError(null);
-      
-      const folderName = categoryId || "jrotc"; 
+
+      const folderName = categoryId || "jrotc";
       const data = await fetchCloudinaryGallery(folderName);
 
       if (subCategoryId) {
         // Find specific event. We normalize both for a bulletproof match.
-        const filtered = data.filter(group => 
+        const filtered = data.filter(group =>
           group.name.toLowerCase().replace(/[\s_]/g, '-') === subCategoryId.toLowerCase()
         );
 
         if (filtered.length === 0 && data.length > 0) {
           setError(`"${formatName(subCategoryId)}" not found.`);
-          setTimeout(() => navigate(`/gallery/${categoryId}`), 3000);
+          redirectTimer = setTimeout(() => navigate(`/gallery/${categoryId}`), 3000);
         } else {
           setEventGroups(filtered);
         }
@@ -54,6 +56,8 @@ export default function Gallery({ isDarkMode }) {
       setLoading(false);
     };
     loadGallery();
+
+    return () => clearTimeout(redirectTimer);
   }, [categoryId, subCategoryId, navigate]);
 
   // Theme Constants

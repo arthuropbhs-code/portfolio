@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function SmartImage({ src, alt, className }) {
+export default function SmartImage({ src, alt, className, width, height }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Generate the tiny blur version URL by modifying the Cloudinary path
@@ -9,11 +9,16 @@ export default function SmartImage({ src, alt, className }) {
   const blurUrl = src.replace('/upload/', '/upload/w_40,e_blur:1000,q_1/');
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div
+      className={`relative overflow-hidden ${className}`}
+      style={width && height ? { aspectRatio: `${width} / ${height}` } : undefined}
+    >
       {/* 1. The Low-Res Blurred Placeholder */}
       <img
         src={blurUrl}
         alt={alt}
+        width={width}
+        height={height}
         className="w-full h-full object-cover scale-110"
         aria-hidden="true"
       />
@@ -22,6 +27,8 @@ export default function SmartImage({ src, alt, className }) {
       <motion.img
         src={src}
         alt={alt}
+        width={width}
+        height={height}
         initial={{ opacity: 0 }}
         animate={{ opacity: isLoaded ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}

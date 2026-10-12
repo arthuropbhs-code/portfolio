@@ -2,16 +2,25 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Shield, Mail } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ isDarkMode }) {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
+  const theme = {
+    footer: isDarkMode ? 'bg-[#0A0E0C] border-white/5' : 'bg-white border-gray-100',
+    modalCard: isDarkMode ? 'bg-[#111814] text-white' : 'bg-white',
+    modalClose: isDarkMode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black',
+    heading: isDarkMode ? 'text-[#C5A572]' : 'text-[#2F4538]',
+    sectionHeading: isDarkMode ? 'text-white' : 'text-black',
+    body: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+  };
+
   return (
-    <footer className="bg-white border-t border-gray-100 py-12 px-6">
+    <footer className={`border-t py-12 px-6 transition-colors duration-1000 ${theme.footer}`}>
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-[10px] tracking-[0.3em] uppercase text-gray-400 font-sans">
           © {new Date().getFullYear()} Arthuro Visuals
         </div>
-        
+
         <div className="flex gap-8 items-center text-[9px] tracking-[0.2em] uppercase font-sans font-medium text-gray-500">
           <button 
             onClick={() => setIsPrivacyOpen(true)}
@@ -44,38 +53,38 @@ export default function Footer() {
               exit={{ scale: 0.95, y: 20 }}
               /* FIX: Set max-height to 75vh on mobile so it doesn't run off the screen.
               */
-              className="bg-white max-w-2xl w-full p-8 md:p-12 relative shadow-2xl overflow-y-auto max-h-[75vh] md:max-h-[80vh] rounded-sm"
+              className={`max-w-2xl w-full p-8 md:p-12 relative shadow-2xl overflow-y-auto max-h-[75vh] md:max-h-[80vh] rounded-sm transition-colors duration-1000 ${theme.modalCard}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setIsPrivacyOpen(false)} 
-                className="absolute top-6 right-6 text-gray-400 hover:text-black p-2"
+              <button
+                onClick={() => setIsPrivacyOpen(false)}
+                className={`absolute top-6 right-6 p-2 transition-colors ${theme.modalClose}`}
               >
                 <X size={20} />
               </button>
 
-              <h3 className="text-3xl font-serif italic mb-8 text-[#2F4538]">Privacy & Image Rights</h3>
-              
-              <div className="space-y-6 text-sm text-gray-600 font-sans font-light leading-relaxed text-left">
+              <h3 className={`text-3xl font-serif italic mb-8 ${theme.heading}`}>Privacy & Image Rights</h3>
+
+              <div className={`space-y-6 text-sm font-sans font-light leading-relaxed text-left ${theme.body}`}>
                 <section>
-                  <h4 className="text-[10px] tracking-widest uppercase font-bold text-black mb-2 flex items-center gap-2">
+                  <h4 className={`text-[10px] tracking-widest uppercase font-bold mb-2 flex items-center gap-2 ${theme.sectionHeading}`}>
                     <Shield size={14} className="text-[#C5A572]" /> Media Release
                   </h4>
                   <p>All photography is conducted in coordination with hosting organizations (Schools, JROTC, Sports Programs). Images are captured under the media release agreements held by these organizations for documentary and promotional use.</p>
                 </section>
 
                 <section>
-                  <h4 className="text-[10px] tracking-widest uppercase font-bold text-black mb-2 flex items-center gap-2">
+                  <h4 className={`text-[10px] tracking-widest uppercase font-bold mb-2 flex items-center gap-2 ${theme.sectionHeading}`}>
                     <Mail size={14} className="text-[#C5A572]" /> Takedown Requests
                   </h4>
                   <p>
-                    I prioritize the privacy and safety of all subjects. If you are a parent or guardian and wish for a specific image of your child to be removed from this portfolio, please contact me directly at 
+                    I prioritize the privacy and safety of all subjects. If you are a parent or guardian and wish for a specific image of your child to be removed from this portfolio, please contact me directly at
                     <span className="text-[#C5A572] font-medium underline ml-1">arthuro.pbhs@gmail.com</span>.
                   </p>
                 </section>
 
                 <section>
-                  <h4 className="text-[10px] tracking-widest uppercase font-bold text-black mb-2">Usage Policy</h4>
+                  <h4 className={`text-[10px] tracking-widest uppercase font-bold mb-2 ${theme.sectionHeading}`}>Usage Policy</h4>
                   <p>Images downloaded from this site are for personal, non-commercial use only. Transformation or commercial resale of these images is strictly prohibited without written consent.</p>
                 </section>
               </div>

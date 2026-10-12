@@ -273,6 +273,14 @@ export default function Home({ isDarkMode }) {
                   <input name="name" required type="text" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} placeholder="Your Name" />
                 </div>
                 <div className="flex flex-col gap-3">
+                  <label className="text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold">Email</label>
+                  <input name="email" required type="email" autoComplete="email" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} placeholder="email@address.com" />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <label className="text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold">Phone <span className="opacity-60 normal-case tracking-normal font-normal">(optional)</span></label>
+                  <input name="phone" type="tel" autoComplete="tel" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm`} placeholder="(555) 123-4567" />
+                </div>
+                <div className="flex flex-col gap-3">
                   <label className="text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold">Event Type</label>
                   <select name="event_type" className={`bg-transparent border-b ${themes.input} py-2 focus:border-[#C5A572] outline-none transition-colors text-sm appearance-none cursor-pointer`}>
                     <option className="bg-[#0A0E0C] text-white">JROTC Event</option>

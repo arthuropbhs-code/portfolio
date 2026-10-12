@@ -30,7 +30,6 @@ export default function App() {
   return (
     <div className={`min-h-screen ${globalBg} font-sans selection:bg-[#C5A572] selection:text-white transition-colors duration-1000`}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400&display=swap');
         .font-serif { font-family: 'Cormorant Garamond', serif; }
         .font-sans { font-family: 'Inter', sans-serif; }
         

@@ -3,11 +3,21 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Navbar() {
+export default function Navbar({ isDarkMode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeSubDropdown, setActiveSubDropdown] = useState(null);
   const location = useLocation();
+
+  const theme = {
+    nav: isDarkMode ? 'bg-[#0A0E0C] border-white/5' : 'bg-white border-gray-100',
+    text: isDarkMode ? 'text-white' : 'text-[#2F4538]',
+    dropdownBg: isDarkMode ? 'bg-[#111814] border-white/10' : 'bg-white border-gray-100',
+    dropdownLink: isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-500 hover:bg-gray-50',
+    sportLabelBg: isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50',
+    mobileOverlay: isDarkMode ? 'bg-[#0A0E0C]' : 'bg-white',
+    mobileBorder: isDarkMode ? 'border-white/10' : 'border-gray-100',
+  };
 
   const jrotcEvents = [
     { name: 'District Comp 25-26', path: '/gallery/jrotc/district-comp' },
@@ -49,14 +59,14 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="fixed top-0 w-full z-[150] bg-white border-b border-gray-100 py-5 px-6 md:px-12 flex justify-between items-center transition-all duration-300">
-      <Link to="/" onClick={closeAll} className="text-2xl font-serif tracking-tighter hover:text-[#C5A572] transition-colors z-[200] text-[#2F4538]">
+    <nav className={`fixed top-0 w-full z-[150] border-b py-5 px-6 md:px-12 flex justify-between items-center transition-all duration-300 ${theme.nav}`}>
+      <Link to="/" onClick={closeAll} className={`text-2xl font-serif tracking-tighter hover:text-[#C5A572] transition-colors z-[200] ${theme.text}`}>
         Arthuro Visuals
       </Link>
 
       {/* --- DESKTOP MENU --- */}
-      <div className="hidden lg:flex gap-10 items-center text-[10px] uppercase tracking-[0.2em] font-medium text-[#2F4538]">
-        
+      <div className={`hidden lg:flex gap-10 items-center text-[10px] uppercase tracking-[0.2em] font-medium ${theme.text}`}>
+
         {/* JROTC Dropdown */}
         <div className="relative py-2 group" onMouseEnter={() => setActiveDropdown('jrotc')} onMouseLeave={() => setActiveDropdown(null)}>
           <button className="flex items-center gap-1 group-hover:text-[#C5A572] transition-colors outline-none uppercase">
@@ -64,9 +74,9 @@ export default function Navbar() {
           </button>
           <AnimatePresence>
             {activeDropdown === 'jrotc' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-[-20px] mt-2 w-64 bg-white border border-gray-100 shadow-2xl py-6 rounded-sm">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className={`absolute top-full left-[-20px] mt-2 w-64 border shadow-2xl py-6 rounded-sm ${theme.dropdownBg}`}>
                 {jrotcEvents.map((event) => (
-                  <Link key={event.name} to={event.path} onClick={closeAll} className="block px-8 py-2.5 text-gray-500 hover:text-[#C5A572] hover:bg-gray-50 transition-all font-serif italic normal-case text-sm">
+                  <Link key={event.name} to={event.path} onClick={closeAll} className={`block px-8 py-2.5 hover:text-[#C5A572] transition-all font-serif italic normal-case text-sm ${theme.dropdownLink}`}>
                     {event.name}
                   </Link>
                 ))}
@@ -82,17 +92,17 @@ export default function Navbar() {
           </button>
           <AnimatePresence>
             {activeDropdown === 'sports' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-[-20px] mt-2 w-64 bg-white border border-gray-100 shadow-2xl py-4 rounded-sm">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className={`absolute top-full left-[-20px] mt-2 w-64 border shadow-2xl py-4 rounded-sm ${theme.dropdownBg}`}>
                 {sportsCategories.map((sport) => (
                   <div key={sport.id} className="relative group/sub" onMouseEnter={() => setActiveSubDropdown(sport.id)} onMouseLeave={() => setActiveSubDropdown(null)}>
-                    <div className="flex items-center justify-between px-8 py-3 text-[#C5A572] hover:bg-gray-50 cursor-default transition-all font-bold text-[9px] tracking-widest uppercase">
+                    <div className={`flex items-center justify-between px-8 py-3 text-[#C5A572] cursor-default transition-all font-bold text-[9px] tracking-widest uppercase ${theme.sportLabelBg}`}>
                       {sport.name} <ChevronRight size={10} />
                     </div>
                     <AnimatePresence>
                       {activeSubDropdown === sport.id && (
-                        <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="absolute left-full top-0 ml-[1px] w-56 bg-white border border-gray-100 shadow-xl py-4 rounded-sm">
+                        <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className={`absolute left-full top-0 ml-[1px] w-56 border shadow-xl py-4 rounded-sm ${theme.dropdownBg}`}>
                           {sport.events.map((event) => (
-                            <Link key={event.name} to={event.path} onClick={closeAll} className="block px-8 py-2 text-gray-500 hover:text-[#C5A572] hover:bg-gray-50 transition-all font-serif italic normal-case text-sm">
+                            <Link key={event.name} to={event.path} onClick={closeAll} className={`block px-8 py-2 hover:text-[#C5A572] transition-all font-serif italic normal-case text-sm ${theme.dropdownLink}`}>
                               {event.name}
                             </Link>
                           ))}
@@ -113,35 +123,35 @@ export default function Navbar() {
           </Link>
         ))}
 
-        <div className="w-[1px] h-4 bg-gray-200 mx-2" />
+        <div className={`w-[1px] h-4 mx-2 ${isDarkMode ? 'bg-white/20' : 'bg-gray-200'}`} />
         <Link to="/contact" className="bg-[#2F4538] text-white px-7 py-3 rounded-sm hover:bg-[#C5A572] transition-all duration-500 shadow-lg">
           Contact
         </Link>
       </div>
 
       {/* --- MOBILE TRIGGER --- */}
-      <button className="lg:hidden z-[200] p-2 text-[#2F4538]" onClick={toggleMobileMenu}>
+      <button className={`lg:hidden z-[200] p-2 ${theme.text}`} onClick={toggleMobileMenu}>
         {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
 
       {/* --- MOBILE OVERLAY --- */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }} className="fixed inset-0 bg-white z-[180] flex flex-col lg:hidden pt-32 px-10 overflow-y-auto pb-20">
-            <div className="flex flex-col gap-8 text-sm uppercase tracking-[0.3em] font-light text-[#2F4538]">
-              
-              <MobileDropdown title="JROTC" items={jrotcEvents} closeAll={closeAll} />
+          <motion.div initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }} className={`fixed inset-0 z-[180] flex flex-col lg:hidden pt-32 px-10 overflow-y-auto pb-20 ${theme.mobileOverlay}`}>
+            <div className={`flex flex-col gap-8 text-sm uppercase tracking-[0.3em] font-light ${theme.text}`}>
+
+              <MobileDropdown title="JROTC" items={jrotcEvents} closeAll={closeAll} isDarkMode={isDarkMode} />
 
               {/* Mobile Sports Section */}
               <div className="flex flex-col gap-4">
-                <span className="font-medium border-b border-gray-100 pb-2">Sports</span>
+                <span className={`font-medium border-b pb-2 ${theme.mobileBorder}`}>Sports</span>
                 <div className="pl-4 flex flex-col gap-6 mt-2">
                   {sportsCategories.map(sport => (
                     <div key={sport.id} className="flex flex-col gap-4">
                       <span className="text-[10px] text-[#C5A572] font-bold tracking-widest">{sport.name}</span>
-                      <div className="flex flex-col gap-4 pl-4 border-l border-gray-100">
+                      <div className={`flex flex-col gap-4 pl-4 border-l ${theme.mobileBorder}`}>
                         {sport.events.map(event => (
-                          <Link key={event.name} to={event.path} onClick={closeAll} className="text-gray-500 normal-case font-serif italic text-lg">
+                          <Link key={event.name} to={event.path} onClick={closeAll} className={`normal-case font-serif italic text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {event.name}
                           </Link>
                         ))}
@@ -152,11 +162,11 @@ export default function Navbar() {
               </div>
 
               {['Social Events', 'Landscape', 'About'].map(link => (
-                <Link key={link} to={link === 'About' ? '/about' : `/gallery/${link.toLowerCase().replace(/\s+/g, '-')}`} onClick={closeAll} className="border-b border-gray-100 pb-4">
+                <Link key={link} to={link === 'About' ? '/about' : `/gallery/${link.toLowerCase().replace(/\s+/g, '-')}`} onClick={closeAll} className={`border-b pb-4 ${theme.mobileBorder}`}>
                   {link}
                 </Link>
               ))}
-              
+
               <Link to="/contact" onClick={closeAll} className="mt-4 bg-[#2F4538] text-white px-8 py-5 text-center rounded-sm text-[10px] tracking-[0.4em] font-bold shadow-xl">
                 GET IN TOUCH
               </Link>
@@ -168,11 +178,11 @@ export default function Navbar() {
   );
 }
 
-function MobileDropdown({ title, items, closeAll }) {
+function MobileDropdown({ title, items, closeAll, isDarkMode }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="w-full">
-      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full border-b border-gray-100 pb-4 text-[#2F4538]">
+      <button onClick={() => setIsOpen(!isOpen)} className={`flex items-center justify-between w-full border-b pb-4 ${isDarkMode ? 'border-white/10 text-white' : 'border-gray-100 text-[#2F4538]'}`}>
         <span className="font-medium">{title}</span>
         <ChevronDown size={16} className={isOpen ? 'rotate-180 text-[#C5A572]' : ''} />
       </button>
@@ -181,7 +191,7 @@ function MobileDropdown({ title, items, closeAll }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="flex flex-col gap-5 pl-4 pt-6 pb-4">
               {items.map(item => (
-                <Link key={item.name} to={item.path} onClick={closeAll} className="text-gray-500 text-xs tracking-[0.2em]">
+                <Link key={item.name} to={item.path} onClick={closeAll} className={`text-xs tracking-[0.2em] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   {item.name}
                 </Link>
               ))}
